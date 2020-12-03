@@ -1,5 +1,5 @@
 /**!
- * lg-thumbnail.js | 1.2.0 | May 20th 2020
+ * lg-thumbnail.js | 1.2.0 | December 8th 2020
  * http://sachinchoolur.github.io/lg-thumbnail.js
  * Copyright (c) 2016 Sachin N; 
  * @license GPLv3 
@@ -39,9 +39,7 @@
         animateThumb: true,
         currentPagerPosition: 'middle',
 
-        thumbWidth: 100,
         thumbContHeight: 100,
-        thumbMargin: 5,
 
         exThumbImage: false,
         showThumbByDefault: true,
@@ -70,7 +68,7 @@
 
         this.thumbOuter = null;
         this.thumbOuterWidth = 0;
-        this.thumbTotalWidth = this.core.items.length * (this.core.s.thumbWidth + this.core.s.thumbMargin);
+        this.thumbTotalWidth = 0;
         this.thumbIndex = this.core.index;
 
         // Thumbnail animation value
@@ -87,6 +85,7 @@
             if (this.core.s.showThumbByDefault) {
                 setTimeout(function () {
                     utils.addClass(_this.core.outer, 'lg-thumb-open');
+                    _this.thumbTotalWidth = _this.core.outer.querySelector('.lg-thumb').offsetWidth;
                 }, 700);
             }
 
@@ -140,8 +139,8 @@
         _this.thumbOuterWidth = _this.thumbOuter.offsetWidth;
 
         if (_this.core.s.animateThumb) {
-            _this.core.outer.querySelector('.lg-thumb').style.width = _this.thumbTotalWidth + 'px';
             _this.core.outer.querySelector('.lg-thumb').style.position = 'relative';
+            _this.core.outer.querySelector('.lg-thumb').style.width = 'max-content';
         }
 
         if (this.core.s.animateThumb) {
@@ -178,7 +177,8 @@
                 thumbImg = thumb;
             }
 
-            thumbList += '<div data-vimeo-id="' + vimeoId + '" class="lg-thumb-item" style="width:' + _this.core.s.thumbWidth + 'px; margin-right: ' + _this.core.s.thumbMargin + 'px"><img src="' + thumbImg + '" /></div>';
+            thumbList += '<div class="lg-thumb-item"><img src="' + thumbImg + '" /></div>';
+
             vimeoId = '';
         }
 
@@ -259,6 +259,7 @@
             setTimeout(function () {
                 _this.animateThumb(_this.core.index);
                 _this.thumbOuterWidth = _this.thumbOuter.offsetWidth;
+                _this.thumbTotalWidth = _this.core.outer.querySelector('.lg-thumb').offsetWidth;
             }, 200);
         });
     };
@@ -276,14 +277,14 @@
                     position = 0;
                     break;
                 case 'middle':
-                    position = this.thumbOuterWidth / 2 - this.core.s.thumbWidth / 2;
+                    position = (this.thumbOuterWidth - $thumb.children[index].offsetWidth) / 2;
                     break;
                 case 'right':
-                    position = this.thumbOuterWidth - this.core.s.thumbWidth;
+                    position = this.thumbOuterWidth - $thumb.children[index].offsetWidth;
             }
-            this.left = (this.core.s.thumbWidth + this.core.s.thumbMargin) * index - 1 - position;
-            if (this.left > this.thumbTotalWidth - this.thumbOuterWidth) {
-                this.left = this.thumbTotalWidth - this.thumbOuterWidth;
+            this.left = $thumb.children[index].offsetLeft - position;
+            if (this.left > $thumb.clientWidth - this.thumbOuterWidth) {
+                this.left = $thumb.clientWidth - this.thumbOuterWidth;
             }
 
             if (this.left < 0) {
@@ -447,7 +448,7 @@
         var _this = this;
         if (_this.core.s.toggleThumb) {
             utils.addClass(_this.core.outer, 'lg-can-toggle');
-            _this.thumbOuter.insertAdjacentHTML('beforeend', '<button aria-label="Toggle thumbnails" class="lg-toggle-thumb lg-icon"></button>');
+            _this.thumbOuter.insertAdjacentHTML('beforeend', '<button type="button" aria-label="Toggle thumbnails" class="lg-toggle-thumb lg-icon"></button>');
             utils.on(_this.core.outer.querySelector('.lg-toggle-thumb'), 'click.lg', function () {
                 if (utils.hasClass(_this.core.outer, 'lg-thumb-open')) {
                     utils.removeClass(_this.core.outer, 'lg-thumb-open');
